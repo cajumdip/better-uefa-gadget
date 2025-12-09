@@ -2,6 +2,9 @@
 
 // Configuration
 const API_BASE_URL = 'https://api.football-data.org/v4';
+const AUTO_REFRESH_INTERVAL = 60000; // 60 seconds
+const MAX_MATCHES_DISPLAY = 10; // Maximum number of matches to display
+
 const LEAGUE_CODES = {
     'DED': 'Eredivisie',
     'CL': 'Champions League',
@@ -11,7 +14,7 @@ const LEAGUE_CODES = {
 const COMPETITION_IDS = {
     'DED': 'DED',    // Eredivisie
     'CL': 'CL',      // Champions League
-    'EL': 'EC'       // Europa Conference League (using EC as EL might not be available)
+    'EL': 'EL'       // Europa League
 };
 
 let apiKey = '';
@@ -98,7 +101,7 @@ function startAutoRefresh() {
         if (currentTab === 'live') {
             loadLiveScores();
         }
-    }, 60000); // Refresh every 60 seconds
+    }, AUTO_REFRESH_INTERVAL);
 }
 
 function stopAutoRefresh() {
@@ -229,8 +232,8 @@ function displayLiveScores(data) {
         return new Date(b.utcDate) - new Date(a.utcDate);
     });
     
-    // Show only recent matches (last 10)
-    const recentMatches = matches.slice(0, 10);
+    // Show only recent matches
+    const recentMatches = matches.slice(0, MAX_MATCHES_DISPLAY);
     
     let html = '';
     recentMatches.forEach(match => {

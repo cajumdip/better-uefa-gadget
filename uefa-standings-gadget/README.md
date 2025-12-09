@@ -134,9 +134,9 @@ The gadget uses standard HTML, CSS, and JavaScript (ES6+):
 ### Customization
 
 You can customize the gadget by editing:
-- **Colors**: Modify CSS variables in `css/style.css`
-- **Refresh Rate**: Change interval in `js/gadget.js` (line 91)
-- **Number of Matches**: Adjust match limit (line 269)
+- **Colors**: Modify CSS color values in `css/style.css`
+- **Refresh Rate**: Change `AUTO_REFRESH_INTERVAL` constant in `js/gadget.js`
+- **Number of Matches**: Adjust `MAX_MATCHES_DISPLAY` constant in `js/gadget.js`
 
 ## Troubleshooting
 
