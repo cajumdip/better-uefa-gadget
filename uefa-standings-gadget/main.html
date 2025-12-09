@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>UEFA Standings Gadget</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src="js/gadget.js"></script>
+</head>
+<body>
+    <div id="mainContainer">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>UEFA Football Standings</h1>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settingsPanel" class="panel" style="display: none;">
+            <div class="panel-header">Settings</div>
+            <div class="panel-content">
+                <table class="settings-table">
+                    <tr>
+                        <td class="label-cell">API Key:</td>
+                        <td>
+                            <input type="text" id="apiKeyInput" class="text-input" placeholder="Enter your football-data.org API key">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="padding-top: 10px;">
+                            <button onclick="saveSettings()" class="button">Save Settings</button>
+                            <button onclick="closeSettings()" class="button">Cancel</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="padding-top: 10px; font-size: 10px;">
+                            Get your free API key at <a href="https://www.football-data.org" target="_blank">football-data.org</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div id="mainContent">
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('standings')">Standings</button>
+                <button class="tab-button" onclick="switchTab('live')">Live Scores</button>
+                <button class="settings-button" onclick="showSettings()" title="Settings">⚙</button>
+            </div>
+
+            <!-- Standings Tab -->
+            <div id="standingsTab" class="tab-content active">
+                <!-- League Selector -->
+                <div class="league-selector">
+                    <label>League: </label>
+                    <select id="leagueSelect" onchange="loadStandings()" class="dropdown">
+                        <option value="DED">Eredivisie</option>
+                        <option value="CL">Champions League</option>
+                        <option value="EL">Europa League</option>
+                    </select>
+                </div>
+
+                <!-- Standings Table -->
+                <div id="standingsContainer">
+                    <div class="loading">Loading standings...</div>
+                </div>
+            </div>
+
+            <!-- Live Scores Tab -->
+            <div id="liveTab" class="tab-content">
+                <!-- League Selector for Live Scores -->
+                <div class="league-selector">
+                    <label>League: </label>
+                    <select id="liveLeagueSelect" onchange="loadLiveScores()" class="dropdown">
+                        <option value="DED">Eredivisie</option>
+                        <option value="CL">Champions League</option>
+                        <option value="EL">Europa League</option>
+                    </select>
+                </div>
+
+                <!-- Live Scores Container -->
+                <div id="liveScoresContainer">
+                    <div class="loading">Loading live scores...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span id="lastUpdate">Last updated: Never</span>
+            <span class="footer-link"><a href="https://www.football-data.org" target="_blank">Data by football-data.org</a></span>
+        </div>
+    </div>
+</body>
+</html>

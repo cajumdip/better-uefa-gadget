@@ -1,0 +1,386 @@
+/* Retro 2000s Styling for UEFA Standings Gadget */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    color: #1E5579;
+    background-color: #E6EEF7;
+    overflow-x: hidden;
+}
+
+#mainContainer {
+    width: 300px;
+    background-color: #E6EEF7;
+    border: 2px solid #85A0B0;
+    border-radius: 5px;
+}
+
+/* Header */
+.header {
+    background: linear-gradient(to bottom, #1E5579, #2B6A94);
+    color: white;
+    padding: 8px 10px;
+    text-align: center;
+    border-bottom: 2px solid #85A0B0;
+    border-radius: 3px 3px 0 0;
+}
+
+.header h1 {
+    font-size: 13px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Panels */
+.panel {
+    background-color: #F5F8FB;
+    border: 1px solid #85A0B0;
+    border-radius: 3px;
+    margin: 10px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.panel-header {
+    background: linear-gradient(to bottom, #1E5579, #2B6A94);
+    color: white;
+    padding: 5px 10px;
+    font-weight: bold;
+    font-size: 11px;
+    border-radius: 3px 3px 0 0;
+}
+
+.panel-content {
+    padding: 10px;
+}
+
+/* Settings Panel */
+#settingsPanel {
+    position: absolute;
+    top: 50px;
+    left: 10px;
+    width: 280px;
+    z-index: 1000;
+    background-color: white;
+}
+
+.settings-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.label-cell {
+    padding: 5px;
+    font-weight: bold;
+    vertical-align: top;
+    padding-top: 8px;
+}
+
+.text-input {
+    width: 100%;
+    padding: 4px;
+    border: 1px solid #85A0B0;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    border-radius: 2px;
+}
+
+.button {
+    background: linear-gradient(to bottom, #E6EEF7, #C5D5E5);
+    border: 1px solid #85A0B0;
+    padding: 4px 12px;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 3px;
+    margin-right: 5px;
+}
+
+.button:hover {
+    background: linear-gradient(to bottom, #F0F5FA, #D0E0F0);
+}
+
+.button:active {
+    background: linear-gradient(to bottom, #C5D5E5, #E6EEF7);
+}
+
+/* Tabs */
+.tabs {
+    background-color: #D5E3F0;
+    border-bottom: 2px solid #85A0B0;
+    padding: 5px 5px 0 5px;
+    position: relative;
+}
+
+.tab-button {
+    background: linear-gradient(to bottom, #E6EEF7, #C5D5E5);
+    border: 1px solid #85A0B0;
+    border-bottom: none;
+    padding: 5px 15px;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+    margin-right: 2px;
+    border-radius: 3px 3px 0 0;
+    color: #1E5579;
+}
+
+.tab-button:hover {
+    background: linear-gradient(to bottom, #F0F5FA, #D0E0F0);
+}
+
+.tab-button.active {
+    background: #E6EEF7;
+    font-weight: bold;
+    border-bottom: 2px solid #E6EEF7;
+    margin-bottom: -2px;
+}
+
+.settings-button {
+    float: right;
+    background: linear-gradient(to bottom, #E6EEF7, #C5D5E5);
+    border: 1px solid #85A0B0;
+    border-bottom: none;
+    padding: 5px 10px;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 3px 3px 0 0;
+}
+
+.settings-button:hover {
+    background: linear-gradient(to bottom, #F0F5FA, #D0E0F0);
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    padding: 10px;
+    min-height: 200px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* League Selector */
+.league-selector {
+    margin-bottom: 10px;
+    padding: 5px;
+    background-color: #F5F8FB;
+    border: 1px solid #85A0B0;
+    border-radius: 3px;
+}
+
+.league-selector label {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.dropdown {
+    padding: 3px;
+    border: 1px solid #85A0B0;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    background-color: white;
+    border-radius: 2px;
+}
+
+/* Standings Table */
+.standings-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border: 1px solid #85A0B0;
+    font-size: 11px;
+}
+
+.standings-table th {
+    background: linear-gradient(to bottom, #1E5579, #2B6A94);
+    color: white;
+    padding: 5px 3px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #85A0B0;
+    font-size: 10px;
+}
+
+.standings-table td {
+    padding: 4px 3px;
+    text-align: center;
+    border: 1px solid #85A0B0;
+}
+
+.standings-table td.team-name {
+    text-align: left;
+    padding-left: 5px;
+    font-weight: bold;
+}
+
+.standings-table tr:nth-child(even) {
+    background-color: #F5F8FB;
+}
+
+.standings-table tr:hover {
+    background-color: #E6EEF7;
+}
+
+.rightborder {
+    border-right: 2px solid #85A0B0 !important;
+}
+
+/* Live Scores */
+.match-container {
+    background-color: white;
+    border: 1px solid #85A0B0;
+    margin-bottom: 8px;
+    padding: 8px;
+    border-radius: 3px;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.match-header {
+    font-size: 10px;
+    color: #666;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.match-status {
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-size: 9px;
+}
+
+.status-live {
+    background-color: #FF0000;
+    color: white;
+    animation: blink 1s infinite;
+}
+
+.status-finished {
+    background-color: #666;
+    color: white;
+}
+
+.status-scheduled {
+    background-color: #E6EEF7;
+    color: #1E5579;
+    border: 1px solid #85A0B0;
+}
+
+.status-halftime {
+    background-color: #FFA500;
+    color: white;
+}
+
+/* Blinking animation for LIVE indicator */
+@keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0.3; }
+}
+
+.match-teams {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.team {
+    flex: 1;
+    text-align: center;
+}
+
+.team-name {
+    font-weight: bold;
+    font-size: 11px;
+    margin-bottom: 3px;
+}
+
+.score {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1E5579;
+    text-align: center;
+    min-width: 30px;
+}
+
+.vs {
+    padding: 0 5px;
+    color: #666;
+    font-size: 10px;
+}
+
+/* Loading & Error States */
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #1E5579;
+    font-style: italic;
+}
+
+.error {
+    background-color: #FFE6E6;
+    border: 1px solid #FF9999;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 3px;
+    color: #CC0000;
+    font-size: 11px;
+}
+
+.no-data {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Footer */
+.footer {
+    background-color: #D5E3F0;
+    border-top: 1px solid #85A0B0;
+    padding: 5px 10px;
+    font-size: 9px;
+    color: #1E5579;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 0 0 3px 3px;
+}
+
+.footer-link a {
+    color: #0000CC;
+    text-decoration: none;
+}
+
+.footer-link a:hover {
+    text-decoration: underline;
+}
+
+/* Scrollbar styling for retro look */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #E6EEF7;
+    border: 1px solid #85A0B0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #1E5579, #2B6A94);
+    border: 1px solid #85A0B0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #2B6A94, #1E5579);
+}
