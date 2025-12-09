@@ -8,13 +8,13 @@ const MAX_MATCHES_DISPLAY = 10; // Maximum number of matches to display
 const LEAGUE_CODES = {
     'DED': 'Eredivisie',
     'CL': 'Champions League',
-    'EL': 'Europa League'
+    'WC': 'FIFA World Cup'
 };
 
 const COMPETITION_IDS = {
     'DED': 'DED',    // Eredivisie
     'CL': 'CL',      // Champions League
-    'EL': 'EL'       // Europa League
+    'WC': 'WC'       // FIFA World Cup
 };
 
 let apiKey = '';
