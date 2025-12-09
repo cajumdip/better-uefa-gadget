@@ -122,7 +122,7 @@ uefa-standings-gadget/
 - **Competition IDs**:
   - Eredivisie: `DED`
   - Champions League: `CL`
-  - Europa Conference League: `EC` (mapped from Europa League)
+  - Europa League: `EL`
 
 ### Browser Compatibility
 
