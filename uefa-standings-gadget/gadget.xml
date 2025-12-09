@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gadget>
+  <name>UEFA Football Standings</name>
+  <namespace>UEFAStandings</namespace>
+  <version>1.0.0.0</version>
+  <author name="UEFA Gadget">
+    <info url="https://github.com/cajumdip/better-uefa-gadget" />
+  </author>
+  <copyright>© 2024</copyright>
+  <description>View live UEFA football standings and scores for Eredivisie, Champions League, and Europa League with a retro 2000s design!</description>
+  <hosts>
+    <host name="sidebar">
+      <base type="HTML" apiVersion="1.0.0" src="main.html" />
+      <permissions>Full</permissions>
+      <platform minPlatformVersion="1.0" />
+      <defaultImage src="images/icon.png" />
+    </host>
+  </hosts>
+</gadget>
