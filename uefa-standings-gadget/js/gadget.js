@@ -82,7 +82,8 @@ function switchTab(tabName) {
     for (var i = 0; i < buttons.length; i++) {
         var btn = buttons[i];
         if (btn.className.indexOf('tab-button') !== -1) {
-            btn.className = btn.className.replace(' active', '').replace('active', '');
+            // Remove active class more robustly
+            btn.className = btn.className.replace(/\bactive\b/g, '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
         }
     }
     
@@ -90,7 +91,8 @@ function switchTab(tabName) {
     if (window.event && window.event.srcElement) {
         var target = window.event.srcElement;
         if (target.className.indexOf('active') === -1) {
-            target.className = target.className + ' active';
+            // Add active class with proper spacing
+            target.className = (target.className + ' active').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
         }
     }
     
@@ -261,6 +263,7 @@ function displayLiveScores(data) {
         for (var i = 0; i < liveStatuses.length; i++) {
             if (a.status === liveStatuses[i]) aIsLive = true;
             if (b.status === liveStatuses[i]) bIsLive = true;
+            if (aIsLive && bIsLive) break; // Early termination
         }
         
         if (aIsLive && !bIsLive) return -1;
@@ -347,9 +350,13 @@ function updateLastUpdateTime() {
 }
 
 // Helper functions for date/time formatting
+function padZero(num) {
+    return num < 10 ? '0' + num : num;
+}
+
 function formatDate(date) {
-    var month = date.getMonth() + 1;
-    var day = date.getDate();
+    var month = padZero(date.getMonth() + 1);
+    var day = padZero(date.getDate());
     var year = date.getFullYear();
     return month + '/' + day + '/' + year;
 }
@@ -360,6 +367,6 @@ function formatTime(date) {
     var ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
     hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? '0' + minutes : minutes;
+    minutes = padZero(minutes);
     return hours + ':' + minutes + ' ' + ampm;
 }
