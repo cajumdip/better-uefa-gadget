@@ -40,10 +40,9 @@ function loadApiKey() {
 
 function saveSettings() {
     var keyInput = document.getElementById('apiKeyInput');
-    var newKey = keyInput.value;
-    if (newKey) {
-        newKey = newKey.replace(/^\s+|\s+$/g, ''); // trim
-    }
+    var newKey = keyInput.value || ''; // Handle null/undefined
+    // Manual trim for IE7/8 compatibility
+    newKey = newKey.replace(/^\s+|\s+$/g, '');
     
     if (newKey) {
         apiKey = newKey;
@@ -73,6 +72,17 @@ function closeSettings() {
     document.getElementById('settingsPanel').style.display = 'none';
 }
 
+// Helper function for class manipulation
+function removeClass(element, className) {
+    element.className = element.className.replace(new RegExp('\\b' + className + '\\b', 'g'), '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+}
+
+function addClass(element, className) {
+    if (element.className.indexOf(className) === -1) {
+        element.className = (element.className + ' ' + className).replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+    }
+}
+
 // Tab Management
 function switchTab(tabName) {
     currentTab = tabName;
@@ -82,18 +92,14 @@ function switchTab(tabName) {
     for (var i = 0; i < buttons.length; i++) {
         var btn = buttons[i];
         if (btn.className.indexOf('tab-button') !== -1) {
-            // Remove active class more robustly
-            btn.className = btn.className.replace(/\bactive\b/g, '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+            removeClass(btn, 'active');
         }
     }
     
     // Add active class to clicked button
     if (window.event && window.event.srcElement) {
         var target = window.event.srcElement;
-        if (target.className.indexOf('active') === -1) {
-            // Add active class with proper spacing
-            target.className = (target.className + ' active').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
-        }
+        addClass(target, 'active');
     }
     
     // Update tab content
