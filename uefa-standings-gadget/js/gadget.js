@@ -203,45 +203,97 @@ function loadStandings() {
 function displayStandings(data, leagueCode) {
     var container = document.getElementById('standingsContainer');
     
-    // Get the standings - could be in different formats depending on competition
-    var standings = [];
-    if (data.standings && data.standings.length > 0) {
-        // For league competitions, use the first standings group
-        standings = data.standings[0].table || data.standings[0];
-    }
+    // Check if this is a tournament competition (with multiple groups)
+    var isTournament = (leagueCode === 'WC' || leagueCode === 'CL');
     
-    if (!standings || standings.length === 0) {
+    if (!data.standings || data.standings.length === 0) {
         container.innerHTML = '<div class="no-data">No standings data available for this league.</div>';
         return;
     }
     
-    var html = '<table class="standings-table">';
-    html += '<thead><tr>';
-    html += '<th class="rightborder">Pos</th>';
-    html += '<th style="text-align: left;">Team</th>';
-    html += '<th>P</th>';
-    html += '<th>W</th>';
-    html += '<th>D</th>';
-    html += '<th>L</th>';
-    html += '<th class="rightborder">Pts</th>';
-    html += '</tr></thead>';
-    html += '<tbody>';
+    var html = '';
     
-    for (var i = 0; i < standings.length; i++) {
-        var team = standings[i];
-        var rowClass = (i % 2 === 1) ? ' class="even"' : '';
-        html += '<tr' + rowClass + '>';
-        html += '<td class="rightborder">' + (team.position || (i + 1)) + '</td>';
-        html += '<td class="team-name">' + (team.team.name || team.team.shortName) + '</td>';
-        html += '<td>' + (team.playedGames || 0) + '</td>';
-        html += '<td>' + (team.won || 0) + '</td>';
-        html += '<td>' + (team.draw || 0) + '</td>';
-        html += '<td>' + (team.lost || 0) + '</td>';
-        html += '<td class="rightborder"><strong>' + (team.points || 0) + '</strong></td>';
-        html += '</tr>';
+    if (isTournament && data.standings.length > 1) {
+        // Display all groups for tournament competitions
+        for (var g = 0; g < data.standings.length; g++) {
+            var group = data.standings[g];
+            var groupName = group.group || 'Group ' + (g + 1);
+            var standings = group.table || group;
+            
+            if (!standings || standings.length === 0) {
+                continue;
+            }
+            
+            // Group header
+            html += '<div class="group-header">' + groupName + '</div>';
+            
+            // Group table
+            html += '<table class="standings-table">';
+            html += '<thead><tr>';
+            html += '<th class="rightborder">Pos</th>';
+            html += '<th style="text-align: left;">Team</th>';
+            html += '<th>P</th>';
+            html += '<th>W</th>';
+            html += '<th>D</th>';
+            html += '<th>L</th>';
+            html += '<th class="rightborder">Pts</th>';
+            html += '</tr></thead>';
+            html += '<tbody>';
+            
+            for (var i = 0; i < standings.length; i++) {
+                var team = standings[i];
+                var rowClass = (i % 2 === 1) ? ' class="even"' : '';
+                html += '<tr' + rowClass + '>';
+                html += '<td class="rightborder">' + (team.position || (i + 1)) + '</td>';
+                html += '<td class="team-name">' + (team.team.name || team.team.shortName) + '</td>';
+                html += '<td>' + (team.playedGames || 0) + '</td>';
+                html += '<td>' + (team.won || 0) + '</td>';
+                html += '<td>' + (team.draw || 0) + '</td>';
+                html += '<td>' + (team.lost || 0) + '</td>';
+                html += '<td class="rightborder"><strong>' + (team.points || 0) + '</strong></td>';
+                html += '</tr>';
+            }
+            
+            html += '</tbody></table>';
+        }
+    } else {
+        // For league competitions, use the first standings group
+        var standings = data.standings[0].table || data.standings[0];
+        
+        if (!standings || standings.length === 0) {
+            container.innerHTML = '<div class="no-data">No standings data available for this league.</div>';
+            return;
+        }
+        
+        html += '<table class="standings-table">';
+        html += '<thead><tr>';
+        html += '<th class="rightborder">Pos</th>';
+        html += '<th style="text-align: left;">Team</th>';
+        html += '<th>P</th>';
+        html += '<th>W</th>';
+        html += '<th>D</th>';
+        html += '<th>L</th>';
+        html += '<th class="rightborder">Pts</th>';
+        html += '</tr></thead>';
+        html += '<tbody>';
+        
+        for (var i = 0; i < standings.length; i++) {
+            var team = standings[i];
+            var rowClass = (i % 2 === 1) ? ' class="even"' : '';
+            html += '<tr' + rowClass + '>';
+            html += '<td class="rightborder">' + (team.position || (i + 1)) + '</td>';
+            html += '<td class="team-name">' + (team.team.name || team.team.shortName) + '</td>';
+            html += '<td>' + (team.playedGames || 0) + '</td>';
+            html += '<td>' + (team.won || 0) + '</td>';
+            html += '<td>' + (team.draw || 0) + '</td>';
+            html += '<td>' + (team.lost || 0) + '</td>';
+            html += '<td class="rightborder"><strong>' + (team.points || 0) + '</strong></td>';
+            html += '</tr>';
+        }
+        
+        html += '</tbody></table>';
     }
     
-    html += '</tbody></table>';
     container.innerHTML = html;
 }
 
