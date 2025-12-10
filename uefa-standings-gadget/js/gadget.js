@@ -5,6 +5,8 @@ if (typeof JSON === 'undefined') {
     var JSON = {};
 }
 if (typeof JSON.parse !== 'function') {
+    // Note: eval() is used here for IE7/8 compatibility.
+    // This is only used to parse responses from the trusted football-data.org API.
     JSON.parse = function(text) {
         return eval('(' + text + ')');
     };
