@@ -1,5 +1,15 @@
 // UEFA Standings Gadget JavaScript - IE7/IE8 Compatible
 
+// JSON polyfill for IE7/IE8
+if (typeof JSON === 'undefined') {
+    var JSON = {};
+}
+if (typeof JSON.parse !== 'function') {
+    JSON.parse = function(text) {
+        return eval('(' + text + ')');
+    };
+}
+
 // Configuration
 var API_BASE_URL = 'https://api.football-data.org/v4';
 var AUTO_REFRESH_INTERVAL = 60000; // 60 seconds
