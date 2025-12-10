@@ -1,25 +1,25 @@
-// UEFA Standings Gadget JavaScript
+// UEFA Standings Gadget JavaScript - IE7/IE8 Compatible
 
 // Configuration
-const API_BASE_URL = 'https://api.football-data.org/v4';
-const AUTO_REFRESH_INTERVAL = 60000; // 60 seconds
-const MAX_MATCHES_DISPLAY = 10; // Maximum number of matches to display
+var API_BASE_URL = 'https://api.football-data.org/v4';
+var AUTO_REFRESH_INTERVAL = 60000; // 60 seconds
+var MAX_MATCHES_DISPLAY = 10; // Maximum number of matches to display
 
-const LEAGUE_CODES = {
+var LEAGUE_CODES = {
     'DED': 'Eredivisie',
     'CL': 'Champions League',
     'WC': 'FIFA World Cup'
 };
 
-const COMPETITION_IDS = {
+var COMPETITION_IDS = {
     'DED': 'DED',    // Eredivisie
     'CL': 'CL',      // Champions League
     'WC': 'WC'       // FIFA World Cup
 };
 
-let apiKey = '';
-let autoRefreshInterval = null;
-let currentTab = 'standings';
+var apiKey = '';
+var autoRefreshInterval = null;
+var currentTab = 'standings';
 
 // Initialize gadget on load
 window.onload = function() {
@@ -31,7 +31,7 @@ window.onload = function() {
 function loadApiKey() {
     // Try to load from localStorage (gadget settings)
     if (typeof(Storage) !== "undefined") {
-        const savedKey = localStorage.getItem('footballDataApiKey');
+        var savedKey = localStorage.getItem('footballDataApiKey');
         if (savedKey) {
             apiKey = savedKey;
         }
@@ -39,8 +39,11 @@ function loadApiKey() {
 }
 
 function saveSettings() {
-    const keyInput = document.getElementById('apiKeyInput');
-    const newKey = keyInput.value.trim();
+    var keyInput = document.getElementById('apiKeyInput');
+    var newKey = keyInput.value;
+    if (newKey) {
+        newKey = newKey.replace(/^\s+|\s+$/g, ''); // trim
+    }
     
     if (newKey) {
         apiKey = newKey;
@@ -75,20 +78,34 @@ function switchTab(tabName) {
     currentTab = tabName;
     
     // Update tab buttons
-    const buttons = document.querySelectorAll('.tab-button');
-    buttons.forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    var buttons = document.getElementsByTagName('button');
+    for (var i = 0; i < buttons.length; i++) {
+        var btn = buttons[i];
+        if (btn.className.indexOf('tab-button') !== -1) {
+            btn.className = btn.className.replace(' active', '').replace('active', '');
+        }
+    }
+    
+    // Add active class to clicked button
+    if (window.event && window.event.srcElement) {
+        var target = window.event.srcElement;
+        if (target.className.indexOf('active') === -1) {
+            target.className = target.className + ' active';
+        }
+    }
     
     // Update tab content
-    const contents = document.querySelectorAll('.tab-content');
-    contents.forEach(content => content.classList.remove('active'));
+    var standingsTab = document.getElementById('standingsTab');
+    var liveTab = document.getElementById('liveTab');
     
     if (tabName === 'standings') {
-        document.getElementById('standingsTab').classList.add('active');
+        standingsTab.className = 'tab-content active';
+        liveTab.className = 'tab-content';
         loadStandings();
         stopAutoRefresh();
     } else if (tabName === 'live') {
-        document.getElementById('liveTab').classList.add('active');
+        standingsTab.className = 'tab-content';
+        liveTab.className = 'tab-content active';
         loadLiveScores();
         startAutoRefresh();
     }
@@ -97,7 +114,7 @@ function switchTab(tabName) {
 // Auto-refresh for live scores
 function startAutoRefresh() {
     stopAutoRefresh(); // Clear any existing interval
-    autoRefreshInterval = setInterval(() => {
+    autoRefreshInterval = setInterval(function() {
         if (currentTab === 'live') {
             loadLiveScores();
         }
@@ -111,52 +128,63 @@ function stopAutoRefresh() {
     }
 }
 
-// API Calls
-async function fetchAPI(endpoint) {
+// API Calls using XMLHttpRequest
+function fetchAPI(endpoint, callback, errorCallback) {
     if (!apiKey) {
-        throw new Error('API key not configured. Please set your API key in Settings.');
+        errorCallback(new Error('API key not configured. Please set your API key in Settings.'));
+        return;
     }
     
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        headers: {
-            'X-Auth-Token': apiKey
-        }
-    });
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', API_BASE_URL + endpoint, true);
+    xhr.setRequestHeader('X-Auth-Token', apiKey);
     
-    if (!response.ok) {
-        if (response.status === 403) {
-            throw new Error('Invalid API key. Please check your settings.');
-        } else if (response.status === 429) {
-            throw new Error('API rate limit exceeded. Please try again later.');
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    callback(data);
+                } catch (e) {
+                    errorCallback(new Error('Failed to parse response'));
+                }
+            } else if (xhr.status === 403) {
+                errorCallback(new Error('Invalid API key. Please check your settings.'));
+            } else if (xhr.status === 429) {
+                errorCallback(new Error('API rate limit exceeded. Please try again later.'));
+            } else {
+                errorCallback(new Error('API error: ' + xhr.status));
+            }
         }
-        throw new Error(`API error: ${response.status}`);
-    }
+    };
     
-    return await response.json();
+    xhr.send();
 }
 
 // Load Standings
-async function loadStandings() {
-    const container = document.getElementById('standingsContainer');
-    const leagueCode = document.getElementById('leagueSelect').value;
-    const competitionId = COMPETITION_IDS[leagueCode];
+function loadStandings() {
+    var container = document.getElementById('standingsContainer');
+    var leagueCode = document.getElementById('leagueSelect').value;
+    var competitionId = COMPETITION_IDS[leagueCode];
     
     container.innerHTML = '<div class="loading">Loading standings...</div>';
     
-    try {
-        const data = await fetchAPI(`/competitions/${competitionId}/standings`);
-        displayStandings(data, leagueCode);
-        updateLastUpdateTime();
-    } catch (error) {
-        container.innerHTML = `<div class="error">Error: ${error.message}</div>`;
-    }
+    fetchAPI('/competitions/' + competitionId + '/standings', 
+        function(data) {
+            displayStandings(data, leagueCode);
+            updateLastUpdateTime();
+        },
+        function(error) {
+            container.innerHTML = '<div class="error">Error: ' + error.message + '</div>';
+        }
+    );
 }
 
 function displayStandings(data, leagueCode) {
-    const container = document.getElementById('standingsContainer');
+    var container = document.getElementById('standingsContainer');
     
     // Get the standings - could be in different formats depending on competition
-    let standings = [];
+    var standings = [];
     if (data.standings && data.standings.length > 0) {
         // For league competitions, use the first standings group
         standings = data.standings[0].table || data.standings[0];
@@ -167,7 +195,7 @@ function displayStandings(data, leagueCode) {
         return;
     }
     
-    let html = '<table class="standings-table">';
+    var html = '<table class="standings-table">';
     html += '<thead><tr>';
     html += '<th class="rightborder">Pos</th>';
     html += '<th style="text-align: left;">Team</th>';
@@ -179,41 +207,45 @@ function displayStandings(data, leagueCode) {
     html += '</tr></thead>';
     html += '<tbody>';
     
-    standings.forEach((team, index) => {
-        html += '<tr>';
-        html += `<td class="rightborder">${team.position || (index + 1)}</td>`;
-        html += `<td class="team-name">${team.team.name || team.team.shortName}</td>`;
-        html += `<td>${team.playedGames || 0}</td>`;
-        html += `<td>${team.won || 0}</td>`;
-        html += `<td>${team.draw || 0}</td>`;
-        html += `<td>${team.lost || 0}</td>`;
-        html += `<td class="rightborder"><strong>${team.points || 0}</strong></td>`;
+    for (var i = 0; i < standings.length; i++) {
+        var team = standings[i];
+        var rowClass = (i % 2 === 1) ? ' class="even"' : '';
+        html += '<tr' + rowClass + '>';
+        html += '<td class="rightborder">' + (team.position || (i + 1)) + '</td>';
+        html += '<td class="team-name">' + (team.team.name || team.team.shortName) + '</td>';
+        html += '<td>' + (team.playedGames || 0) + '</td>';
+        html += '<td>' + (team.won || 0) + '</td>';
+        html += '<td>' + (team.draw || 0) + '</td>';
+        html += '<td>' + (team.lost || 0) + '</td>';
+        html += '<td class="rightborder"><strong>' + (team.points || 0) + '</strong></td>';
         html += '</tr>';
-    });
+    }
     
     html += '</tbody></table>';
     container.innerHTML = html;
 }
 
 // Load Live Scores
-async function loadLiveScores() {
-    const container = document.getElementById('liveScoresContainer');
-    const leagueCode = document.getElementById('liveLeagueSelect').value;
-    const competitionId = COMPETITION_IDS[leagueCode];
+function loadLiveScores() {
+    var container = document.getElementById('liveScoresContainer');
+    var leagueCode = document.getElementById('liveLeagueSelect').value;
+    var competitionId = COMPETITION_IDS[leagueCode];
     
     container.innerHTML = '<div class="loading">Loading live scores...</div>';
     
-    try {
-        const data = await fetchAPI(`/competitions/${competitionId}/matches?status=SCHEDULED,LIVE,IN_PLAY,PAUSED,FINISHED`);
-        displayLiveScores(data);
-        updateLastUpdateTime();
-    } catch (error) {
-        container.innerHTML = `<div class="error">Error: ${error.message}</div>`;
-    }
+    fetchAPI('/competitions/' + competitionId + '/matches?status=SCHEDULED,LIVE,IN_PLAY,PAUSED,FINISHED',
+        function(data) {
+            displayLiveScores(data);
+            updateLastUpdateTime();
+        },
+        function(error) {
+            container.innerHTML = '<div class="error">Error: ' + error.message + '</div>';
+        }
+    );
 }
 
 function displayLiveScores(data) {
-    const container = document.getElementById('liveScoresContainer');
+    var container = document.getElementById('liveScoresContainer');
     
     if (!data.matches || data.matches.length === 0) {
         container.innerHTML = '<div class="no-data">No matches available for this league.</div>';
@@ -221,10 +253,15 @@ function displayLiveScores(data) {
     }
     
     // Sort matches: LIVE first, then by date
-    const matches = data.matches.sort((a, b) => {
-        const liveStatuses = ['LIVE', 'IN_PLAY', 'PAUSED'];
-        const aIsLive = liveStatuses.includes(a.status);
-        const bIsLive = liveStatuses.includes(b.status);
+    var matches = data.matches.sort(function(a, b) {
+        var liveStatuses = ['LIVE', 'IN_PLAY', 'PAUSED'];
+        var aIsLive = false;
+        var bIsLive = false;
+        
+        for (var i = 0; i < liveStatuses.length; i++) {
+            if (a.status === liveStatuses[i]) aIsLive = true;
+            if (b.status === liveStatuses[i]) bIsLive = true;
+        }
         
         if (aIsLive && !bIsLive) return -1;
         if (!aIsLive && bIsLive) return 1;
@@ -233,43 +270,48 @@ function displayLiveScores(data) {
     });
     
     // Show only recent matches
-    const recentMatches = matches.slice(0, MAX_MATCHES_DISPLAY);
+    var recentMatches = matches.slice(0, MAX_MATCHES_DISPLAY);
     
-    let html = '';
-    recentMatches.forEach(match => {
-        html += createMatchHTML(match);
-    });
+    var html = '';
+    for (var i = 0; i < recentMatches.length; i++) {
+        html += createMatchHTML(recentMatches[i]);
+    }
     
     container.innerHTML = html;
 }
 
 function createMatchHTML(match) {
-    const status = getMatchStatus(match);
-    const statusClass = getStatusClass(match.status);
-    const matchDate = new Date(match.utcDate);
-    const dateStr = matchDate.toLocaleDateString() + ' ' + matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    var status = getMatchStatus(match);
+    var statusClass = getStatusClass(match.status);
+    var matchDate = new Date(match.utcDate);
+    var dateStr = formatDate(matchDate) + ' ' + formatTime(matchDate);
     
-    let html = '<div class="match-container">';
+    var html = '<div class="match-container">';
     html += '<div class="match-header">';
-    html += `<span>${dateStr}</span>`;
-    html += `<span class="match-status ${statusClass}">${status}</span>`;
+    html += '<span class="match-date">' + dateStr + '</span>';
+    html += '<span class="match-status-container"><span class="match-status ' + statusClass + '">' + status + '</span></span>';
+    html += '<div style="clear: both;"></div>';
     html += '</div>';
     
     html += '<div class="match-teams">';
-    html += '<div class="team">';
-    html += `<div class="team-name">${match.homeTeam.name || match.homeTeam.shortName}</div>`;
-    html += '</div>';
+    html += '<table><tr>';
+    html += '<td class="team">';
+    html += '<div class="team-name">' + (match.homeTeam.name || match.homeTeam.shortName) + '</div>';
+    html += '</td>';
     
     // Score or VS
     if (match.status === 'SCHEDULED' || match.status === 'TIMED') {
-        html += '<div class="vs">vs</div>';
+        html += '<td class="vs">vs</td>';
     } else {
-        html += `<div class="score">${match.score.fullTime.home || 0} - ${match.score.fullTime.away || 0}</div>`;
+        var homeScore = match.score.fullTime.home || 0;
+        var awayScore = match.score.fullTime.away || 0;
+        html += '<td class="score">' + homeScore + ' - ' + awayScore + '</td>';
     }
     
-    html += '<div class="team">';
-    html += `<div class="team-name">${match.awayTeam.name || match.awayTeam.shortName}</div>`;
-    html += '</div>';
+    html += '<td class="team">';
+    html += '<div class="team-name">' + (match.awayTeam.name || match.awayTeam.shortName) + '</div>';
+    html += '</td>';
+    html += '</tr></table>';
     html += '</div>';
     
     html += '</div>';
@@ -277,7 +319,7 @@ function createMatchHTML(match) {
 }
 
 function getMatchStatus(match) {
-    const statusMap = {
+    var statusMap = {
         'SCHEDULED': 'SCHEDULED',
         'TIMED': 'SCHEDULED',
         'IN_PLAY': 'LIVE',
@@ -299,7 +341,25 @@ function getStatusClass(status) {
 }
 
 function updateLastUpdateTime() {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    document.getElementById('lastUpdate').textContent = `Last updated: ${timeStr}`;
+    var now = new Date();
+    var timeStr = formatTime(now);
+    document.getElementById('lastUpdate').textContent = 'Last updated: ' + timeStr;
+}
+
+// Helper functions for date/time formatting
+function formatDate(date) {
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var year = date.getFullYear();
+    return month + '/' + day + '/' + year;
+}
+
+function formatTime(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    return hours + ':' + minutes + ' ' + ampm;
 }

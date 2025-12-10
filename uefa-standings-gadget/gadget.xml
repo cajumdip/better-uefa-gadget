@@ -7,7 +7,7 @@
     <info url="https://github.com/cajumdip/better-uefa-gadget" />
   </author>
   <copyright>© 2024</copyright>
-  <description>View live UEFA football standings and scores for Eredivisie, Champions League, and Europa League with a retro 2000s design!</description>
+  <description>View live UEFA football standings and scores for Eredivisie, Champions League, and FIFA World Cup with a retro 2000s design!</description>
   <hosts>
     <host name="sidebar">
       <base type="HTML" apiVersion="1.0.0" src="main.html" />
