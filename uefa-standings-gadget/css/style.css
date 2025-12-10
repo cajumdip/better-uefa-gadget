@@ -6,22 +6,32 @@
 }
 
 body {
-    font-family: Verdana, Arial, sans-serif;
+    font-family: Verdana, Tahoma, Arial, sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 11px;
     color: #1E5579;
+    margin: 0;
+    padding: 0;
+    width: 300px;
+    height: 400px;
     background-color: #E6EEF7;
-    overflow-x: hidden;
 }
 
 #mainContainer {
-    width: 300px;
+    width: 296px;
+    height: 396px;
     background-color: #E6EEF7;
     border: 2px solid #85A0B0;
+    margin: 0;
+    padding: 0;
 }
 
 /* Header */
 .header {
     background: #1E5579;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1E5579', endColorstr='#2B6A94');
     color: white;
     padding: 8px 10px;
     text-align: center;
